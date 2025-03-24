@@ -1,0 +1,21 @@
+.radar-container {
+    width: 90%;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+  }
+  
+  .dropdown-wrapper {
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  
+  #country-select {
+    margin-left: 8px;
+    padding: 4px 8px;
+    font-size: 14px;
+  }
+  
