@@ -62,12 +62,4 @@ PapaParse
 
 💻 Responsive and modular design
 
-💡 Future Enhancements
-Filter by genre, release year, or studio
-
-Enhance tooltips and transitions
-
-Add option to upload CSV files
-
-Export visualizations as images
 
