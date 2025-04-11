@@ -8,36 +8,30 @@ This project is an interactive data visualization application built with **React
 
 To run the app locally, follow the steps below:
 
-### 🔧 Setup Instructions  
+### 🔧 Setup Instructions
 
-**Step 1: Clone the project**
-
+```bash
+# Step 1: Clone the project
 git clone https://github.com/your-username/dataVis_project.git
 
-**Step 2: Navigate to the anime-chart folder**
-
+# Step 2: Navigate to the anime-chart folder
 cd dataVis_project/anime-chart
 
-**Step 3: Install required dependencies**
-
+# Step 3: Install required dependencies
 npm install react-chartjs-2 chart.js papaparse
 
-**Step 4: Start the development server**
-
+# Step 4: Start the development server
 npm start
 
-**Step 5: Open your browser**
-
-Go to:
-
+# Step 5: Open your browser
 http://localhost:3000
+```
 
-If port 3000 is already in use, it may prompt you to use a different port.
+---
 
-📁 Project Structure
-java
-Copy
-Edit
+## 📁 Project Structure
+
+```
 dataVis_project/
 └── anime-chart/
     ├── public/
@@ -52,20 +46,37 @@ dataVis_project/
     │   ├── index.js
     │   └── styles/
     └── package.json
+```
 
-📦 Dependencies
+---
+
+## 📦 Dependencies
+
+```
 React
 Chart.js
 react-chartjs-2
 PapaParse
+```
 
-🎯 Features
+---
+
+## 🎯 Features
+
+```
 📊 Interactive bar, line, area, and scatter plots
-
 📂 CSV parsing and dynamic updates
-
 ⚡ Real-time filtering by country or category
-
 💻 Responsive and modular design
+```
 
+---
 
+## 💡 Future Enhancements
+
+```
+- Filter by genre, release year, or studio
+- Enhance tooltips and transitions
+- Add option to upload CSV files
+- Export visualizations as images
+```
