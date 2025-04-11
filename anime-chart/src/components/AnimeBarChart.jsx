@@ -1,65 +1,70 @@
-import React, { useState } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
-import "./AnimeBarChart.css";
 
-const chartData = {
-  Japan: [
-    { source: "Manga", count: 120 },
-    { source: "Original", count: 80 },
-  ],
-  USA: [
-    { source: "Manga", count: 40 },
-    { source: "Original", count: 150 },
-  ],
-  Korea: [
-    { source: "Manga", count: 60 },
-    { source: "Original", count: 90 },
-  ],
-};
+import React, { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
+import Papa from 'papaparse';
+import './AnimeBarChart.css';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const AnimeBarChart = () => {
-  const [selectedCountry, setSelectedCountry] = useState("Japan");
+  const [state, setstate] = useState('United States');
+  const [chartData, setChartData] = useState(null);
+  const [countries, setCountries] = useState([]);
 
-  const handleCountryChange = (event) => {
-    setSelectedCountry(event.target.value);
-  };
+  useEffect(() => {
+    Papa.parse(process.env.PUBLIC_URL + '/cleaned_usa_data.csv', {
+      download: true,
+      header: true,
+      complete: (results) => {
+        const allData = results.data;
+        const countryList = [...new Set(allData.map(row => row.state).filter(Boolean))];
+        setCountries(countryList);
+
+        const filtered = allData.filter(row => row.state === state);
+        const sourceCounts = {};
+        filtered.forEach(row => {
+          const source = row.source || 'Unknown';
+          sourceCounts[source] = (sourceCounts[source] || 0) + 1;
+        });
+
+        const labels = Object.keys(sourceCounts);
+        const values = Object.values(sourceCounts);
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: 'Anime Count by Source',
+              data: values,
+              backgroundColor: 'rgba(100, 100, 255, 0.6)',
+            }
+          ]
+        });
+      }
+    });
+  }, [state]);
 
   return (
     <div className="chart-container">
-      <h2 className="chart-title">Anime Count by Source</h2>
-
-      <div style={{ marginBottom: "1rem", textAlign: "center" }}>
-        <label htmlFor="country-select" style={{ marginRight: "8px" }}>Country:</label>
-        <select id="country-select" value={selectedCountry} onChange={handleCountryChange}>
-          {Object.keys(chartData).map((country) => (
-            <option key={country} value={country}>{country}</option>
+      <h3>Anime Count by Source</h3>
+      <label>
+        State:
+        <select value={state} onChange={(e) => setstate(e.target.value)}>
+          {countries.map((c, idx) => (
+            <option key={idx} value={c}>{c}</option>
           ))}
         </select>
-      </div>
-
-      <div className="chart-area">
-        <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-            data={chartData[selectedCountry]}
-            margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
-            >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="source" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#8884d8" radius={[5, 5, 0, 0]} />
-            </BarChart>
-        </ResponsiveContainer>
-        </div>
-
+      </label>
+      {chartData ? <Bar data={chartData} /> : <p>Loading...</p>}
     </div>
   );
 };

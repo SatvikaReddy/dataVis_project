@@ -1,87 +1,149 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import { Bubble } from 'react-chartjs-2';
+import Papa from 'papaparse';
 import {
-  ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  ZAxis,
+  Chart as ChartJS,
+  PointElement,
   Tooltip,
-  CartesianGrid,
   Legend,
-  ResponsiveContainer,
-} from "recharts";
-import "./AnimeBubbleChart.css";
+  Title,
+  LinearScale
+} from 'chart.js';
+import './AnimeBubbleChart.css';
 
-const genres = ["Action", "Drama", "Comedy", "Romance", "Fantasy"];
-const ageBins = ["<13", "13-17", "18-25", "26-35", "36+"];
-
-// Map genre and age bin labels to numbers
-const genreMap = Object.fromEntries(genres.map((g, i) => [g, i + 1]));
-const ageMap = Object.fromEntries(ageBins.map((a, i) => [a, i + 1]));
-
-// Sample dataset
-const data = [
-  { genre: "Action", age: "13-17", popularity: 30, producer: "A" },
-  { genre: "Drama", age: "18-25", popularity: 70, producer: "B" },
-  { genre: "Comedy", age: "13-17", popularity: 60, producer: "C" },
-  { genre: "Romance", age: "18-25", popularity: 50, producer: "B" },
-  { genre: "Fantasy", age: "26-35", popularity: 80, producer: "A" },
-  { genre: "Action", age: "36+", popularity: 40, producer: "C" },
-];
-
-const colorMap = {
-  A: "#8884d8",
-  B: "#82ca9d",
-  C: "#ffc658",
-};
+ChartJS.register(PointElement, Tooltip, Legend, Title, LinearScale);
 
 const AnimeBubbleChart = () => {
+  const [data, setData] = useState(null);
+  const [noData, setNoData] = useState(false);
+  const [state, setstate] = useState('Michigan');
+  const [countries, setCountries] = useState([]);
+
+  const ageGroups = ['35+', '32–35','29–31', '26–28','<26' ];
+
+  const getAgeGroup = (age) => {
+    const a = parseInt(age);
+    if (isNaN(a)) return null;
+    if (a < 26) return '<26';
+    if (a <= 28) return '26–28';
+    if (a <= 31) return '29–31';
+    if (a <= 35) return '32–35';
+    return '35+';
+  };
+
+  useEffect(() => {
+    Papa.parse(process.env.PUBLIC_URL + '/cleaned_usa_data.csv', {
+      download: true,
+      header: true,
+      complete: (results) => {
+        const allData = results.data;
+        const uniqueCountries = [...new Set(allData.map(row => row.state).filter(Boolean))];
+        setCountries(uniqueCountries);
+
+        const filtered = allData.filter(row => row.state === state);
+        const bubbleMap = {};
+
+        filtered.forEach(row => {
+          const ageGroup = getAgeGroup(row.Age);
+          if (!ageGroup || !row.genre) return;
+
+          const genres = row.genre.split(',').map(g => g.trim());
+          genres.forEach(genre => {
+            const key = genre + '-' + ageGroup;
+            bubbleMap[key] = (bubbleMap[key] || 0) + 1;
+          });
+        });
+
+        const genreList = [...new Set(Object.keys(bubbleMap).map(k => k.split('-')[0]))];
+
+        const colors = ['rgba(120, 120, 255, 0.6)', 'rgba(100, 255, 100, 0.6)', 'rgba(255, 180, 50, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(153, 102, 255, 0.6)', 'rgba(0, 200, 255, 0.6)'];
+
+        const datasets = genreList.slice(0, 6).map((genre, idx) => {
+          const data = Object.keys(bubbleMap)
+            .filter(k => k.startsWith(genre + '-'))
+            .map(k => {
+              const [, ageGroup] = k.split('-');
+              return {
+                x: genreList.indexOf(genre),
+                y: ageGroup,
+                r: Math.min(bubbleMap[k] / 50 + 5, 30),
+                count: bubbleMap[k]
+              };
+            });
+          return {
+            label: genre,
+            data,
+            backgroundColor: colors[idx % colors.length]
+          };
+        });
+
+        if (datasets.length === 0) {
+          setNoData(true);
+        }
+
+        setData({ datasets });
+      }
+    });
+  }, [state]);
+
   return (
-    <div className="bubble-container">
-      <h2>Anime Popularity by Genre, Age Group & Producer</h2>
-      <ResponsiveContainer width="100%" height={400}>
-        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-          <CartesianGrid />
-          <XAxis
-            type="number"
-            dataKey="x"
-            name="Genre"
-            tickFormatter={(tick) => genres[tick - 1]}
-            domain={[1, genres.length]}
-            allowDecimals={false}
-          />
-          <YAxis
-            type="number"
-            dataKey="y"
-            name="Age Group"
-            tickFormatter={(tick) => ageBins[tick - 1]}
-            domain={[1, ageBins.length]}
-            allowDecimals={false}
-          />
-          <ZAxis type="number" dataKey="z" range={[40, 1000]} name="Popularity" />
-          <Tooltip
-            cursor={{ strokeDasharray: "3 3" }}
-            formatter={(value, name, props) => {
-              if (name === "x") return [genres[value - 1], "Genre"];
-              if (name === "y") return [ageBins[value - 1], "Age Group"];
-              return [value, name];
+    <div className="chart-container">
+      <h3>Genre × Age × Popularity</h3>
+      <label>
+        State:
+        <select value={state} onChange={(e) => setstate(e.target.value)}>
+          {countries.map((c, idx) => (
+            <option key={idx} value={c}>{c}</option>
+          ))}
+        </select>
+      </label>
+      {noData ? (
+        <p>No data available to display this chart.</p>
+      ) : data ? (
+        <div style={{ height: '520px' }}>
+          <Bubble
+            data={data}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  title: { display: true, text: 'Genre Index' },
+                  ticks: { callback: () => '' }
+                },
+                y: {
+                  type: 'category',
+                  labels: ageGroups,
+                  title: { display: true, text: 'Age Group' },
+                  ticks: {
+                    font: { size: 14 },
+                    color: '#444'
+                  }
+                }
+              },
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    boxWidth: 12,
+                    padding: 10
+                  }
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function (context) {
+                      const genre = context.dataset.label || '';
+                      const age = context.raw.y;
+                      const count = context.raw.count;
+                      return `${genre} | Age Group: ${age} | Count: ${count}`;
+                    }
+                  }
+                }
+              }
             }}
           />
-          <Legend />
-
-          {/* Render one Scatter per producer */}
-          {Object.keys(colorMap).map((producerKey) => (
-            <Scatter
-              key={producerKey}
-              name={`Producer ${producerKey}`}
-              data={data
-                .filter((d) => d.producer === producerKey)
-                .map((d) => ({ x: genreMap[d.genre], y: ageMap[d.age], z: d.popularity }))}
-              fill={colorMap[producerKey]}
-            />
-          ))}
-        </ScatterChart>
-      </ResponsiveContainer>
+        </div>
+      ) : <p>Loading...</p>}
     </div>
   );
 };

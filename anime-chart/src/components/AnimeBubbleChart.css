@@ -1,11 +1,28 @@
-.bubble-container {
-    width: 90%;
-    padding: 20px;
-    height: 550px;
-    max-width: 800px;
-    margin: auto;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-  
+.chart-container {
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin: 20px auto;
+  max-width: 1000px;
+  text-align: center;
+}
+
+.chart-container h3 {
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.chart-container label {
+  font-weight: 500;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.chart-container select {
+  margin-left: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
