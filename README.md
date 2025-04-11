@@ -11,20 +11,27 @@ To run the app locally, follow the steps below:
 ### 🔧 Setup Instructions  
 
 **Step 1: Clone the project**
+
 git clone https://github.com/your-username/dataVis_project.git
 
 **Step 2: Navigate to the anime-chart folder**
+
 cd dataVis_project/anime-chart
 
 **Step 3: Install required dependencies**
+
 npm install react-chartjs-2 chart.js papaparse
 
 **Step 4: Start the development server**
+
 npm start
 
 **Step 5: Open your browser**
+
 Go to:
+
 http://localhost:3000
+
 If port 3000 is already in use, it may prompt you to use a different port.
 
 📁 Project Structure
