@@ -8,10 +8,9 @@ This project is an interactive data visualization application built with **React
 
 To run the app locally, follow the steps below:
 
-### 🔧 Setup Instructions
+### 🔧 Setup Instructions  
 
-**Step 1: Clone the project**
-
+    **Step 1: Clone the project**
 ```bash
 git clone https://github.com/your-username/dataVis_project.git
 
