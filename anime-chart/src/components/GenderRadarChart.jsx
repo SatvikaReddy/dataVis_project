@@ -16,10 +16,9 @@ import './GenderRadarChart.css';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend, Title);
 
-const GenderRadarChart = () => {
-  const [state, setstate] = useState('United States');
+const GenderRadarChart = ({ selectedState, setAllStates }) => {
+// Use selectedState directly
   const [chartData, setChartData] = useState(null);
-  const [countries, setCountries] = useState([]);
 
   useEffect(() => {
     Papa.parse(process.env.PUBLIC_URL + '/cleaned_usa_data.csv', {
@@ -28,9 +27,9 @@ const GenderRadarChart = () => {
       complete: (results) => {
         const allData = results.data;
         const countryList = [...new Set(allData.map(row => row.state).filter(Boolean))];
-        setCountries(countryList);
+        setAllStates(countryList);
 
-        const filtered = allData.filter(row => row.state === state);
+        const filtered = allData.filter(row => row.state === selectedState);
         const genders = { Male: {}, Female: {} };
         const fields = ['Completed', 'Watching', 'Dropped', 'Rewatched'];
 
@@ -74,47 +73,52 @@ const GenderRadarChart = () => {
         });
       }
     });
-  }, [state]);
+  }, [selectedState, setAllStates]);
 
   return (
     <div className="chart-container radar-chart">
       <h3>Anime Consumption by Gender</h3>
-      <label>
-        State:
-        <select value={state} onChange={(e) => setstate(e.target.value)}>
-          {countries.map((c, idx) => (
-            <option key={idx} value={c}>{c}</option>
-          ))}
-        </select>
-      </label>
       {chartData ? <Radar
-        data={chartData}
-        options={{
-          responsive: true,
-          maintainAspectRatio: true,
-          aspectRatio: 1.1,
-          elements: {
-            line: { borderWidth: 3 },
-            point: { radius: 5 }
+    data={chartData}
+    options={{
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1.1,
+      elements: {
+        line: { borderWidth: 3 },
+        point: { radius: 5 }
+      },
+      scales: {
+        r: {
+          angleLines: { color: '#eee' },
+          grid: { color: '#ddd' },
+          ticks: {
+            callback: (v) => `${v}k`,
+            backdropColor: 'transparent'
           },
-          scales: {
-            r: {
-              angleLines: { color: '#eee' },
-              grid: { color: '#ddd' },
-              ticks: {
-                callback: (v) => `${v}k`,
-                backdropColor: 'transparent'
-              },
-              pointLabels: {
-                font: { size: 14 }
-              }
-            }
-          },
-          plugins: {
-            legend: { position: 'top' }
+          pointLabels: {
+            font: { size: 14 }
           }
-        }}
-      /> : <p>Loading...</p>}
+        }
+      },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            title: function () {
+              return '';  // ⛔️ Disable title
+            },
+            label: function (context) {
+              const rawValue = context.raw * 1000;
+              const label = context.dataset.label;
+              const activity = context.label;
+              return `${activity}: ${label} - ${rawValue.toLocaleString()} viewers`;
+            }
+          }
+        }
+      }
+    }}
+  />: <p>Loading...</p>}
     </div>
   );
 };

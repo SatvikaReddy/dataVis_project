@@ -13,13 +13,11 @@ import './AnimeBubbleChart.css';
 
 ChartJS.register(PointElement, Tooltip, Legend, Title, LinearScale);
 
-const AnimeBubbleChart = () => {
+const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
   const [data, setData] = useState(null);
   const [noData, setNoData] = useState(false);
-  const [state, setstate] = useState('Michigan');
-  const [countries, setCountries] = useState([]);
 
-  const ageGroups = ['35+', '32–35','29–31', '26–28','<26' ];
+  const ageGroups = ['35+', '32–35', '29–31', '26–28', '<26'];
 
   const getAgeGroup = (age) => {
     const a = parseInt(age);
@@ -38,9 +36,9 @@ const AnimeBubbleChart = () => {
       complete: (results) => {
         const allData = results.data;
         const uniqueCountries = [...new Set(allData.map(row => row.state).filter(Boolean))];
-        setCountries(uniqueCountries);
+        setAllStates(uniqueCountries);
 
-        const filtered = allData.filter(row => row.state === state);
+        const filtered = allData.filter(row => row.state === selectedState);
         const bubbleMap = {};
 
         filtered.forEach(row => {
@@ -84,19 +82,11 @@ const AnimeBubbleChart = () => {
         setData({ datasets });
       }
     });
-  }, [state]);
+  }, [selectedState, setAllStates]);
 
   return (
     <div className="chart-container">
-      <h3>Genre × Age × Popularity</h3>
-      <label>
-        State:
-        <select value={state} onChange={(e) => setstate(e.target.value)}>
-          {countries.map((c, idx) => (
-            <option key={idx} value={c}>{c}</option>
-          ))}
-        </select>
-      </label>
+      <h3>Popularity of Anime Genres Across Age Groups</h3>
       {noData ? (
         <p>No data available to display this chart.</p>
       ) : data ? (
@@ -135,7 +125,7 @@ const AnimeBubbleChart = () => {
                       const genre = context.dataset.label || '';
                       const age = context.raw.y;
                       const count = context.raw.count;
-                      return `${genre} | Age Group: ${age} | Count: ${count}`;
+                      return `${genre} | Age Group: ${age} | # of Viewers: ${count}`;
                     }
                   }
                 }

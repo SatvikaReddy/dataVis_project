@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import Papa from 'papaparse';
@@ -15,10 +14,8 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const AnimeBarChart = () => {
-  const [state, setstate] = useState('United States');
+const AnimeBarChart = ({ selectedState, setAllStates }) => {
   const [chartData, setChartData] = useState(null);
-  const [countries, setCountries] = useState([]);
 
   useEffect(() => {
     Papa.parse(process.env.PUBLIC_URL + '/cleaned_usa_data.csv', {
@@ -26,10 +23,13 @@ const AnimeBarChart = () => {
       header: true,
       complete: (results) => {
         const allData = results.data;
-        const countryList = [...new Set(allData.map(row => row.state).filter(Boolean))];
-        setCountries(countryList);
 
-        const filtered = allData.filter(row => row.state === state);
+        // Set state list (only once across app)
+        const countryList = [...new Set(allData.map(row => row.state).filter(Boolean))];
+        setAllStates(countryList);
+
+        // Filter data based on selected state
+        const filtered = allData.filter(row => row.state === selectedState);
         const sourceCounts = {};
         filtered.forEach(row => {
           const source = row.source || 'Unknown';
@@ -51,19 +51,11 @@ const AnimeBarChart = () => {
         });
       }
     });
-  }, [state]);
+  }, [selectedState, setAllStates]);
 
   return (
     <div className="chart-container">
       <h3>Anime Count by Source</h3>
-      <label>
-        State:
-        <select value={state} onChange={(e) => setstate(e.target.value)}>
-          {countries.map((c, idx) => (
-            <option key={idx} value={c}>{c}</option>
-          ))}
-        </select>
-      </label>
       {chartData ? <Bar data={chartData} /> : <p>Loading...</p>}
     </div>
   );

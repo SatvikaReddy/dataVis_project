@@ -1,38 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import AnimeBarChart from './components/AnimeBarChart';
 import GenderRadarChart from './components/GenderRadarChart';
 import AnimeBubbleChart from './components/AnimeBubbleChart';
+import "./Navbar.css";
 
-const navLinkStyle = {
-  color: "white",
-  textDecoration: "none",
-  fontWeight: "bold",
-  fontSize: "16px"
-};
-
+// Navbar remains the same
 const Navbar = () => {
   return (
-    <nav style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "20px 30px",
-      backgroundColor: "#333",
-      color: "white",
-      marginBottom: "30px",
-      borderRadius: "0 0 10px 10px"
-    }}>
-      <h2 style={{ margin: 0 }}>Anime Dataset Visualizations</h2>
-      <div style={{ display: "flex", gap: "20px" }}>
-        <a href="#bar" style={navLinkStyle}>Popularity</a>
-        <a href="#radar" style={navLinkStyle}>Gender Stats</a>
-        <a href="#bubble" style={navLinkStyle}>Rating vs Episodes</a>
+    <header className="navbar-banner">
+      <div className="navbar-title-section">
+        <h1 className="navbar-title">AnimeData</h1>
       </div>
-    </nav>
+      <nav className="navbar-links">
+        <a href="#bar">Popularity</a>
+        <a href="#radar">Gender Stats</a>
+        <a href="#bubble">Rating vs Episodes</a>
+        <a href="/Exploring.pdf" target="_blank" rel="noopener noreferrer">Process Book</a>
+      </nav>
+    </header>
   );
 };
 
+// Stats panel remains the same
 const TopAnimeStats = () => {
   return (
     <div style={{
@@ -91,14 +81,38 @@ const TopAnimeStats = () => {
   );
 };
 
+// MAIN APP COMPONENT
 function App() {
+  const [selectedState, setSelectedState] = useState('Michigan');
+  const [allStates, setAllStates] = useState([]); // shared state list
+
   return (
     <div>
       <Navbar />
+
       <div style={{ padding: "30px" }}>
+        {/* SHARED STATE SELECTOR */}
+        <div style={{ textAlign: "center", marginBottom: "30px" }}>
+          <label>
+            Select State:&nbsp;
+            <select
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+            >
+              {allStates.map((s, idx) => (
+                <option key={idx} value={s}>{s}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
         <TopAnimeStats />
 
-        {/* Top row: Bar chart + Radar chart side-by-side */}
+
+        <h4 style={{ textAlign: 'center' }}>Showing stats for: <strong>{selectedState}</strong></h4>
+
+
+        {/* Bar and Radar chart side-by-side */}
         <div style={{
           display: "flex",
           justifyContent: "center",
@@ -107,17 +121,20 @@ function App() {
           marginBottom: "40px"
         }}>
           <div id="bar" style={{ flex: "1 1 45%", minWidth: "300px" }}>
-            <AnimeBarChart />
+            <AnimeBarChart selectedState={selectedState} setAllStates={setAllStates}/>
           </div>
           <div id="radar" style={{ flex: "1 1 45%", minWidth: "300px" }}>
-            <GenderRadarChart />
+            <GenderRadarChart
+              selectedState={selectedState}
+              setAllStates={setAllStates}
+            />
           </div>
         </div>
 
-        {/* Bottom row: Bubble chart below */}
+        {/* Bubble chart full-width */}
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div id="bubble" style={{ flex: "1 1 60%", minWidth: "300px" }}>
-            <AnimeBubbleChart />
+            <AnimeBubbleChart selectedState={selectedState} setAllStates={setAllStates} />
           </div>
         </div>
       </div>
