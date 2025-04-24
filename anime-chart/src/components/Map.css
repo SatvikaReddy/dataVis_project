@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+/* src/components/Map.css */
+
+#states > .state {
+    stroke-width: 1px;
+    stroke: black;
+    stroke-opacity: 0.2;
+  }
+  
+#states > .state.selected {
+    stroke-width: 2px;
+    stroke: black;
+    stroke-opacity: 1;
+}
+
+.tooltip {
+    position: absolute;        /* you already have this inline */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+  }

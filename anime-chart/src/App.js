@@ -3,6 +3,7 @@ import './App.css';
 import AnimeBarChart from './components/AnimeBarChart';
 import GenderRadarChart from './components/GenderRadarChart';
 import AnimeBubbleChart from './components/AnimeBubbleChart';
+import Map from './components/Map';
 import "./Navbar.css";
 
 // Navbar remains the same
@@ -107,6 +108,16 @@ function App() {
         </div>
 
         <TopAnimeStats />
+
+        {/* MAP SECTION – added below trophies */}
+        <div style={{ marginBottom: "40px" }}>
+          <h3 style={{ textAlign: 'center' }}>USA Heatmap</h3>
+          <Map 
+            selectedState={selectedState}
+            setSelectedState={setSelectedState}
+            setAllStates={setAllStates}
+          />
+        </div>
 
 
         <h4 style={{ textAlign: 'center' }}>Showing stats for: <strong>{selectedState}</strong></h4>
