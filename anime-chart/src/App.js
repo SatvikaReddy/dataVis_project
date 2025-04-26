@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import TopAnimeStats from './components/TopAnimeStats'; // <-- Proper import
 import AnimeBarChart from './components/AnimeBarChart';
 import GenderRadarChart from './components/GenderRadarChart';
 import AnimeBubbleChart from './components/AnimeBubbleChart';
@@ -20,65 +21,6 @@ const Navbar = () => {
         <a href="/Exploring.pdf" target="_blank" rel="noopener noreferrer">Process Book</a>
       </nav>
     </header>
-  );
-};
-
-// Stats panel remains the same
-const TopAnimeStats = () => {
-  return (
-    <div style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: "40px",
-      padding: "20px",
-      border: "1px solid #ccc",
-      borderRadius: "10px",
-      backgroundColor: "#f9f9f9"
-    }}>
-      <div style={{ textAlign: "center", minWidth: "120px" }}>
-        <div style={{
-          border: "2px dashed gray",
-          borderRadius: "50%",
-          padding: "20px",
-          fontWeight: "bold"
-        }}>
-          #TOTAL<br />UNIQUE<br />ANIME
-        </div>
-      </div>
-
-      <div style={{ flex: 1, padding: "0 20px" }}>
-        <h3 style={{ textAlign: "center" }}>MOST POPULAR ANIMES</h3>
-        {[1, 2, 3].map((rank) => (
-          <div key={rank} style={{ display: "flex", alignItems: "center", margin: "5px 0" }}>
-            <span style={{ fontSize: "20px", marginRight: "10px" }}>🏆 #{rank}</span>
-            <div style={{
-              width: "60px",
-              height: "60px",
-              backgroundColor: "#e0e0e0",
-              border: "1px solid #aaa",
-              marginRight: "10px"
-            }}></div>
-            <span>Anime Poster Thumbnail</span>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ minWidth: "200px" }}>
-        <h3 style={{ textAlign: "center" }}>BEST RATERS</h3>
-        {[1, 2, 3].map((rank) => (
-          <div key={rank} style={{ display: "flex", alignItems: "center", margin: "5px 0" }}>
-            <span style={{ fontSize: "20px", marginRight: "10px" }}>🏆 #{rank}</span>
-            <div style={{
-              width: "40px",
-              height: "40px",
-              backgroundColor: "#d0d0d0",
-              border: "1px solid #aaa"
-            }}></div>
-          </div>
-        ))}
-      </div>
-    </div>
   );
 };
 
@@ -107,9 +49,10 @@ function App() {
           </label>
         </div>
 
-        <TopAnimeStats />
+        {/* Correct TopAnimeStats (dynamic based on selectedState) */}
+        <TopAnimeStats selectedState={selectedState} />
 
-        {/* MAP SECTION – added below trophies */}
+        {/* MAP SECTION */}
         <div style={{ marginBottom: "40px" }}>
           <h3 style={{ textAlign: 'center' }}>USA Heatmap</h3>
           <Map 
@@ -119,9 +62,9 @@ function App() {
           />
         </div>
 
-
-        <h4 style={{ textAlign: 'center' }}>Showing stats for: <strong>{selectedState}</strong></h4>
-
+        <h4 style={{ textAlign: 'center' }}>
+          Showing stats for: <strong>{selectedState}</strong>
+        </h4>
 
         {/* Bar and Radar chart side-by-side */}
         <div style={{
