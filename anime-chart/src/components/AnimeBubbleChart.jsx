@@ -54,7 +54,38 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
 
         const genreList = [...new Set(Object.keys(bubbleMap).map(k => k.split('-')[0]))];
 
-        const colors = ['rgba(120, 120, 255, 0.6)', 'rgba(100, 255, 100, 0.6)', 'rgba(255, 180, 50, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(153, 102, 255, 0.6)', 'rgba(0, 200, 255, 0.6)'];
+        const tableauColors = [
+          'rgba(31, 119, 180, 0.7)',  // Blue
+          'rgba(255, 127, 14, 0.7)',  // Orange
+          'rgba(44, 160, 44, 0.7)',   // Green
+          'rgba(214, 39, 40, 0.7)',   // Red
+          'rgba(148, 103, 189, 0.7)', // Purple
+          'rgba(140, 86, 75, 0.7)',   // Brown
+          'rgba(227, 119, 194, 0.7)', // Pink
+          'rgba(127, 127, 127, 0.7)', // Gray
+          'rgba(188, 189, 34, 0.7)',  // Olive
+          'rgba(23, 190, 207, 0.7)'   // Cyan
+        ];
+        
+        // Seed known genres
+        const genreColorMap = {
+          Action: tableauColors[0],
+          Drama: tableauColors[1],
+          Romance: tableauColors[2],
+          Comedy: tableauColors[3],
+          Fantasy: tableauColors[4],
+          SciFi: tableauColors[5]
+        };
+        
+        // Assign remaining colors to unseen genres
+        let colorIndex = Object.keys(genreColorMap).length;
+        
+        genreList.forEach((genre) => {
+          if (!genreColorMap[genre]) {
+            genreColorMap[genre] = tableauColors[colorIndex % tableauColors.length];
+            colorIndex++;
+          }
+        });
 
         const datasets = genreList.slice(0, 6).map((genre, idx) => {
           const data = Object.keys(bubbleMap)
@@ -71,7 +102,7 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
           return {
             label: genre,
             data,
-            backgroundColor: colors[idx % colors.length]
+            backgroundColor: genreColorMap[genre]
           };
         });
 
@@ -90,6 +121,8 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
       {noData ? (
         <p>No data available to display this chart.</p>
       ) : data ? (
+
+        <>
         <div style={{ height: '520px' }}>
           <Bubble
             data={data}
@@ -133,6 +166,17 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
             }}
           />
         </div>
+      <div className="bubble-size-legend">
+      <span>Popularity:</span>
+      <div className="bubble-legend-scale">
+        <div className="bubble-circle small">Low</div>
+        <div className="bubble-circle medium">Medium</div>
+        <div className="bubble-circle large">High</div>
+      </div>
+    </div>
+
+</>
+        
       ) : <p>Loading...</p>}
     </div>
   );
