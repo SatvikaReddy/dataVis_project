@@ -51,7 +51,7 @@ const GenderRadarChart = ({ selectedState, setAllStates }) => {
               datasets: [
                 {
                   label: 'Male',
-                  data: fields.map(f => genders.Male[f]),
+                  data: fields.map(f => genders.Male[f]/1000),
                   backgroundColor: 'rgba(120,120,255,0.2)',
                   borderColor: 'rgba(100,100,255,1)',
                   borderWidth: 1,
@@ -60,7 +60,7 @@ const GenderRadarChart = ({ selectedState, setAllStates }) => {
                 },
                 {
                   label: 'Female',
-                  data: fields.map(f => genders.Female[f]),
+                  data: fields.map(f => genders.Female[f]/1000),
                   backgroundColor: 'rgba(0,200,100,0.2)',
                   borderColor: 'rgba(0,200,0,1)',
                   borderWidth: 1,
