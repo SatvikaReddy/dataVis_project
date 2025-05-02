@@ -1,113 +1,121 @@
-.anime-bar-chart-container {
-    margin: 30px auto;
-    max-width: 1200px;
-    padding: 30px;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+.anime-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 30px;
+  background: linear-gradient(to right, #f7faff, #e3f2fd);
+  border-radius: 16px;
+}
+
+.anime-left {
+  width: 60%;
+}
+
+.anime-entry {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.emoji-medal {
+  font-size: 1.8rem;
+  margin-right: 10px;
+}
+
+.anime-img {
+  width: 90px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  margin-right: 16px;
+}
+
+.anime-info {
+  flex: 1;
+}
+
+.anime-title-text {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.anime-description {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.anime-right {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.unique-circle {
+  margin-bottom: 30px;
+  animation: rotate 4s linear infinite;
+  position: relative;
+}
+
+.unique-circle::after {
+  content: "✨";
+  font-size: 1.5rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  animation: sparkle 2s infinite ease-in-out;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
   }
-  
-  .anime-bar-chart-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr 2fr;
-    gap: 40px;
-    align-items: start;
+  to {
+    transform: rotate(360deg);
   }
-  
-  
-  .anime-unique {
-    flex: 1;
-    display: flex;
-    justify-content: center;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8);
   }
-  
-  .unique-circle {
-    width: 160px;
-    height: 160px;
-    border: 3px dashed #bbb;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 14px;
-    background-color: #fdfdfd;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-    text-align: center;
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
   }
-  
-  .unique-number {
-    font-size: 32px;
-    font-weight: bold;
-    color: #000;
-    margin-top: 8px;
-  }
-  
-  .anime-most-popular,
-  .anime-best-raters {
-    flex: 2;
-    background: #f8fafc;
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  }
-  
-  h3 {
-    margin-bottom: 16px;
-    font-weight: bold;
-    color: #111;
-  }
-  
-  .anime-rank-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin: 16px 0;
-    justify-content: flex-start;
-    padding-left: 20px;
-  }
-  
-  .rank-badge {
-    font-size: 18px;
-    font-weight: bold;
-    min-width: 60px;
-  }
-  
-  .anime-poster {
-    width: 70px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .anime-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-  
-  .anime-title {
-    font-size: 16px;
-    font-weight: 500;
-    max-width: 160px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  
-  /* Top Rater Card */
-  .rater-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background-color: #fff;
-    padding: 12px 16px;
-    border-radius: 12px;
-    margin-bottom: 16px;
-  }  
+}
+
+.raters-header {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.raters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.rater-entry {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.rater-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin: 0 12px;
+}
+
+.rater-name {
+  font-weight: 600;
+}
