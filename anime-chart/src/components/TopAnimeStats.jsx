@@ -4,6 +4,19 @@ import './TopAnimeStats.css';
 
 const trophyEmojis = ['🥇', '🥈', '🥉'];
 
+const fallbackDescriptions = {
+  'One Piece': 'Many years ago, Woonan, a legendary pirate, plundered one-third of the world\'s gold and stashed it away on his secret island shrouded in mystery. In the present, Luffy and the rest of the Straw Hats continue on their journey to the Grand Line.',
+  'InuYasha': 'Kagome Higurashi\'s 15th birthday takes a sudden turn when she is forcefully pulled by a demon into the old well of her family\'s shrine. Brought to the past, when demons were a common sight in feudal Japan, Kagome finds herself persistently hunted by these vile creatures, all yearning for an item she unknowingly carries: the Shikon Jewel, a small sphere holding extraordinary power.',
+  'Bleach': 'Ichigo Kurosaki is an ordinary high schooler—until his family is attacked by a Hollow, a corrupt spirit that seeks to devour human souls. It is then that he meets a Soul Reaper named Rukia Kuchiki, who gets injured while protecting Ichigo\'s family from the assailant.'
+};
+
+
+const fallbackImages = {
+  'Bleach': 'https://cdn.myanimelist.net/images/anime/3/40451.jpg',
+  'InuYasha': 'https://cdn.myanimelist.net/images/anime/4/19644.jpg',
+  'One Piece': 'https://cdn.myanimelist.net/images/anime/6/73245.jpg'
+};
+
 const TopAnimeStats = ({ selectedState = 'Michigan' }) => {
   const [totalUnique, setTotalUnique] = useState(0);
   const [topAnimes, setTopAnimes] = useState([]);
@@ -29,30 +42,30 @@ const TopAnimeStats = ({ selectedState = 'Michigan' }) => {
           .sort((a, b) => b[1] - a[1])
           .slice(0, 3);
 
-        const fallbackImages = {
-          'Bleach': 'https://cdn.myanimelist.net/images/anime/3/40451.jpg',
-          'InuYasha': 'https://cdn.myanimelist.net/images/anime/4/19644.jpg',
-          'One Piece': 'https://cdn.myanimelist.net/images/anime/6/73245.jpg'
-        };
-
         const animeWithDetails = await Promise.all(
           sortedAnimes.map(async ([title], index) => {
             try {
               const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(title)}&limit=1`);
               const data = await res.json();
               const entry = data?.data?.[0];
+
+              const imageUrl = entry?.images?.jpg?.image_url || fallbackImages[title] || 'https://via.placeholder.com/60x90?text=No+Image';
+              const synopsis = entry?.synopsis
+                ? entry.synopsis.split('. ').slice(0, 2).join('. ') + '.'
+                : fallbackDescriptions[title] || 'An epic anime adventure awaits!';
+
               return {
                 rank: index + 1,
                 title,
-                imageUrl: entry?.images?.jpg?.image_url || fallbackImages[title] || 'https://via.placeholder.com/60x90?text=No+Image',
-                synopsis: entry?.synopsis ? entry.synopsis.split('. ').slice(0, 2).join('. ') + '.' : null
+                imageUrl,
+                synopsis
               };
             } catch {
               return {
                 rank: index + 1,
                 title,
                 imageUrl: fallbackImages[title] || 'https://via.placeholder.com/60x90?text=No+Image',
-                synopsis: null
+                synopsis: fallbackDescriptions[title] || 'An epic anime adventure awaits!'
               };
             }
           })
@@ -104,9 +117,7 @@ const TopAnimeStats = ({ selectedState = 'Michigan' }) => {
             <img src={anime.imageUrl} alt={anime.title} className="anime-img" />
             <div className="anime-info">
               <div className="anime-title-text">{anime.title}</div>
-              {anime.synopsis && (
-                <div className="anime-description">{anime.synopsis}</div>
-              )}
+              <div className="anime-description">{anime.synopsis}</div>
             </div>
           </div>
         ))}
