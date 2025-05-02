@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Papa from 'papaparse';
 import './TopAnimeStats.css';
 
@@ -6,79 +6,76 @@ const TopAnimeStats = ({ selectedState }) => {
   const [totalUnique, setTotalUnique] = useState(0);
   const [topAnimes, setTopAnimes] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
+  const [dataRows, setDataRows] = useState([]);
+  const posterCache = useRef({});
 
   useEffect(() => {
-    Papa.parse(process.env.PUBLIC_URL + '/cleaned_usa_data.csv', {
-      download: true,
-      header: true,
-      complete: async (results) => {
-        const allData = results.data.filter(row => row.state === selectedState);
-
-        // Unique Anime Count
-        const uniqueTitles = new Set(allData.map(row => row.title));
-        setTotalUnique(uniqueTitles.size);
-
-        // Top 3 Animes
-        const animeCounts = {};
-        allData.forEach(row => {
-          const title = row.title || 'Unknown';
-          animeCounts[title] = (animeCounts[title] || 0) + 1;
-        });
-
-        const sortedAnimes = Object.entries(animeCounts)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 3);
-
-        const animeWithPosters = await Promise.all(
-          sortedAnimes.map(async ([title], index) => {
-            try {
-              const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(title)}&limit=1`);
-              const data = await res.json();
-              const imageUrl = data?.data?.[0]?.images?.jpg?.image_url || 'https://via.placeholder.com/60';
-              return { rank: index + 1, title, imageUrl };
-            } catch (err) {
-              console.error('Error fetching image for:', title);
-              return { rank: index + 1, title, imageUrl: 'https://via.placeholder.com/60' };
-            }
-          })
-        );
-
-        setTopAnimes(animeWithPosters);
-
-        // Top 3 Best Raters with human avatars
-        const userCounts = {};
-        allData.forEach(row => {
-          const username = row.username || 'Unknown';
-          const total = parseInt(row['Total Entries']) || 0;
-          userCounts[username] = Math.max(userCounts[username] || 0, total);
-        });
-
-        const sortedUsersRaw = Object.entries(userCounts)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 3);
-
-        const sortedUsers = Array.from({ length: 3 }).map((_, index) => {
-          const entry = sortedUsersRaw[index];
-          if (entry) {
-            const [username] = entry;
-            return {
-              rank: index + 1,
-              username,
-              avatarUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${encodeURIComponent(username)}`
-            };
-          } else {
-            return {
-              rank: index + 1,
-              username: 'Anonymous',
-              avatarUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=placeholder${index}`
-            };
+        Papa.parse(
+          `${process.env.PUBLIC_URL}/stats_data.csv`,
+          {
+            download: true,
+            header: true,
+            complete: ({ data }) => setDataRows(data),
+            error: err => console.error('CSV parse error:', err),
           }
+        );
+      }, []);
+    
+      // recompute stats when dataRows or selectedState changes
+      useEffect(() => {
+        if (!dataRows.length) return;
+    
+        const animeCounts = {};
+        const userCounts = {};
+        dataRows.forEach(r => {
+          if (r.state !== selectedState) return;
+          const title = r.title || 'Unknown';
+          animeCounts[title] = (animeCounts[title] || 0)+1;
+          const user = r.username || 'Unknown';
+          const total = parseInt(r['Total Entries'], 10) || 0;
+          userCounts[user] = Math.max(userCounts[user] || 0, total);
         });
-
-        setTopUsers(sortedUsers);
-      }
-    });
-  }, [selectedState]);
+    
+        setTotalUnique(Object.keys(animeCounts).length);
+    
+        // fetch top 3 anime posters in parallel with cache
+        Promise.all(
+          Object.entries(animeCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(async ([title], idx) => {
+              if (posterCache.current[title]) {
+                return { rank: idx + 1, title, imageUrl: posterCache.current[title] };
+              }
+              try {
+                const res = await fetch(
+                  `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(title)}&limit=1`
+                );
+                const json = await res.json();
+                const img = json?.data?.[0]?.images?.jpg?.image_url
+                  || 'https://via.placeholder.com/60';
+                posterCache.current[title] = img;
+                return { rank: idx+1, title, imageUrl: img };
+              } catch {
+                const placeholder = 'https://via.placeholder.com/60';
+                posterCache.current[title] = placeholder;
+                return { rank: idx + 1, title, imageUrl: placeholder };
+              }
+            })
+        ).then(setTopAnimes);
+    
+        // compute top 3 users
+        const topUsersList = Object.entries(userCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([username], idx) => ({
+            rank: idx + 1,
+            username,
+            avatarUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${encodeURIComponent(username)}`,
+          }));
+        setTopUsers(topUsersList);
+    
+      }, [dataRows, selectedState]);
 
   return (
     <div className="anime-bar-chart-container">

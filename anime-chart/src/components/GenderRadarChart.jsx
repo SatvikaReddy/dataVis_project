@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Radar } from 'react-chartjs-2';
 import Papa from 'papaparse';
@@ -21,60 +20,60 @@ const GenderRadarChart = ({ selectedState, setAllStates }) => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    Papa.parse(process.env.PUBLIC_URL + '/cleaned_usa_data.csv', {
-      download: true,
-      header: true,
-      complete: (results) => {
-        const allData = results.data;
-        const countryList = [...new Set(allData.map(row => row.state).filter(Boolean))];
-        setAllStates(countryList);
-
-        const filtered = allData.filter(row => row.state === selectedState);
+        const stateSet = new Set();
         const genders = { Male: {}, Female: {} };
         const fields = ['Completed', 'Watching', 'Dropped', 'Rewatched'];
-
-        fields.forEach(field => {
-          genders.Male[field] = 0;
-          genders.Female[field] = 0;
+        fields.forEach(f => {
+          genders.Male[f] = 0;
+          genders.Female[f] = 0;
         });
-
-        filtered.forEach(row => {
-          const g = row.Gender;
-          if (genders[g]) {
-            fields.forEach(field => {
-              const value = parseFloat(row[field]) || 0;
-              genders[g][field] += value;
+    
+        Papa.parse(`${process.env.PUBLIC_URL}/radar_data.csv`, {
+          download: true,
+          header: true,
+          chunk: ({ data: rows }) => {
+            rows.forEach(row => {
+              if (row.state) stateSet.add(row.state);
+              if (row.state !== selectedState) return;
+    
+              const g = row.Gender;
+              if (!genders[g]) return;
+              fields.forEach(f => {
+                const v = parseFloat(row[f]) || 0;
+                genders[g][f] += v;
+              });
             });
-          }
+          },
+          complete: () => {
+            setAllStates(Array.from(stateSet).sort());
+            setChartData({
+              labels: fields,
+              datasets: [
+                {
+                  label: 'Male',
+                  data: fields.map(f => genders.Male[f]),
+                  backgroundColor: 'rgba(120,120,255,0.2)',
+                  borderColor: 'rgba(100,100,255,1)',
+                  borderWidth: 1,
+                  pointBackgroundColor: 'rgba(80,80,255,1)',
+                  pointRadius: 5
+                },
+                {
+                  label: 'Female',
+                  data: fields.map(f => genders.Female[f]),
+                  backgroundColor: 'rgba(0,200,100,0.2)',
+                  borderColor: 'rgba(0,200,0,1)',
+                  borderWidth: 1,
+                  pointBackgroundColor: 'rgba(0,200,0,1)',
+                  pointRadius: 5
+                }
+              ]
+            });
+          },
+          error: err => console.error('CSV parse error:', err)
         });
-
-        setChartData({
-          labels: fields,
-          datasets: [
-            {
-              label: 'Male',
-              data: fields.map(f => Math.round(genders.Male[f] / 1000)),
-              backgroundColor: 'rgba(120,120,255,0.2)',
-              borderColor: 'rgba(100,100,255,1)',
-              borderWidth: 1,
-              pointBackgroundColor: 'rgba(80,80,255,1)',
-              pointRadius: 5
-            },
-            {
-              label: 'Female',
-              data: fields.map(f => Math.round(genders.Female[f] / 1000)),
-              backgroundColor: 'rgba(0,200,100,0.2)',
-              borderColor: 'rgba(0,200,0,1)',
-              borderWidth: 1,
-              pointBackgroundColor: 'rgba(0,200,0,1)',
-              pointRadius: 5
-            }
-          ]
-        });
-      }
-    });
-  }, [selectedState, setAllStates]);
-
+      }, [selectedState, setAllStates]);
+      
   return (
     <div className="chart-container radar-chart">
       <h3>Anime Consumption by Gender</h3>
@@ -93,7 +92,7 @@ const GenderRadarChart = ({ selectedState, setAllStates }) => {
           angleLines: { color: '#eee' },
           grid: { color: '#ddd' },
           ticks: {
-            callback: (v) => `${v}k`,
+            callback: v => `${v}k`,
             backdropColor: 'transparent'
           },
           pointLabels: {
