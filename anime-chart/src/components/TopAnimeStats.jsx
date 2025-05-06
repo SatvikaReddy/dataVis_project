@@ -10,7 +10,6 @@ const fallbackDescriptions = {
   'Bleach': 'Ichigo Kurosaki is an ordinary high schooler—until his family is attacked by a Hollow, a corrupt spirit that seeks to devour human souls. It is then that he meets a Soul Reaper named Rukia Kuchiki, who gets injured while protecting Ichigo\'s family from the assailant.'
 };
 
-
 const fallbackImages = {
   'Bleach': 'https://cdn.myanimelist.net/images/anime/3/40451.jpg',
   'InuYasha': 'https://cdn.myanimelist.net/images/anime/4/19644.jpg',
@@ -28,7 +27,6 @@ const TopAnimeStats = ({ selectedState = 'Michigan' }) => {
       header: true,
       complete: async (results) => {
         const allData = results.data.filter(row => row.state === selectedState);
-
         const uniqueTitles = new Set(allData.map(row => row.title));
         setTotalUnique(uniqueTitles.size);
 
@@ -49,10 +47,10 @@ const TopAnimeStats = ({ selectedState = 'Michigan' }) => {
               const data = await res.json();
               const entry = data?.data?.[0];
 
-              const imageUrl = entry?.images?.jpg?.image_url || fallbackImages[title] || 'https://via.placeholder.com/60x90?text=No+Image';
+              const imageUrl = entry?.images?.jpg?.image_url || fallbackImages[title];
               const synopsis = entry?.synopsis
                 ? entry.synopsis.split('. ').slice(0, 2).join('. ') + '.'
-                : fallbackDescriptions[title] || 'An epic anime adventure awaits!';
+                : fallbackDescriptions[title];
 
               return {
                 rank: index + 1,
@@ -64,8 +62,8 @@ const TopAnimeStats = ({ selectedState = 'Michigan' }) => {
               return {
                 rank: index + 1,
                 title,
-                imageUrl: fallbackImages[title] || 'https://via.placeholder.com/60x90?text=No+Image',
-                synopsis: fallbackDescriptions[title] || 'An epic anime adventure awaits!'
+                imageUrl: fallbackImages[title],
+                synopsis: fallbackDescriptions[title]
               };
             }
           })
@@ -109,8 +107,8 @@ const TopAnimeStats = ({ selectedState = 'Michigan' }) => {
 
   return (
     <div className="anime-container">
-      <div className="anime-left">
-        <h3>MOST POPULAR ANIMES</h3>
+      <div className="panel anime-left">
+        <h3>Most Popular Animes</h3>
         {topAnimes.map((anime, idx) => (
           <div key={anime.title} className="anime-entry">
             <span className="emoji-medal">{trophyEmojis[idx]}</span>
@@ -123,26 +121,13 @@ const TopAnimeStats = ({ selectedState = 'Michigan' }) => {
         ))}
       </div>
 
-      <div className="anime-right">
-        <div className="unique-circle sparkle">
-          <svg width="160" height="160" className="rotating-circle">
-            <defs>
-              <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#7fbcff" />
-                <stop offset="100%" stopColor="#4a91e2" />
-              </linearGradient>
-            </defs>
-            <circle cx="80" cy="80" r="75" fill="url(#circleGradient)" stroke="#fff" strokeWidth="2" />
-            <text x="80" y="80" textAnchor="middle" dy="0.3em" fontSize="26" fill="white" fontWeight="bold">
-              {totalUnique}
-            </text>
-            <text x="80" y="100" textAnchor="middle" fontSize="12" fill="white">
-              UNIQUE ANIME
-            </text>
-          </svg>
+      <div className="panel anime-right">
+        <div className="unique-circle">
+          <div>{totalUnique}</div>
+          <div className="circle-label">Unique Anime</div>
         </div>
 
-        <h3 className="raters-header">BEST RATERS</h3>
+        <h3 className="raters-header">Best Raters</h3>
         <div className="raters-list">
           {topUsers.map((user, idx) => (
             <div key={user.rank} className="rater-entry">
