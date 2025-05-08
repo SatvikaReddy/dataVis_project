@@ -21,14 +21,16 @@ body {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 30px;
+  gap: 70px;
   margin-bottom: 40px;
+  margin-right: 40px;
 }
 
 .chart-wrapper {
   flex: 1 1 45%;
   min-width: 300px;
 }
+
 
 .bubble-wrapper {
   display: flex;

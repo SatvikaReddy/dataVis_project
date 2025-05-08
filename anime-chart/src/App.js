@@ -25,9 +25,14 @@ const Navbar = ({ selectedState, setSelectedState, allStates }) => {
             <a href="#bubble">Rating vs Episodes</a>
           </div>
         </div>
-
-        <a href="/Exploring.pdf" target="_blank" rel="noopener noreferrer">Process Book</a>
-
+        <a
+          href="/Exploring.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontSize: '13px' }}
+        >
+          Process Book
+        </a>
         <div className="state-selector">
           <select
             value={selectedState}

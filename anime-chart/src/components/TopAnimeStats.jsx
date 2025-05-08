@@ -1,136 +1,142 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 import './TopAnimeStats.css';
 
-const TopAnimeStats = ({ selectedState }) => {
+const trophyEmojis = ['🥇', '🥈', '🥉'];
+
+const fallbackDescriptions = {
+  'One Piece': 'Many years ago, Woonan, a legendary pirate, plundered one-third of the world\'s gold and stashed it away on his secret island shrouded in mystery. In the present, Luffy and the rest of the Straw Hats continue on their journey to the Grand Line.',
+  'InuYasha': 'Kagome Higurashi\'s 15th birthday takes a sudden turn when she is forcefully pulled by a demon into the old well of her family\'s shrine. Brought to the past, when demons were a common sight in feudal Japan, Kagome finds herself persistently hunted by these vile creatures, all yearning for an item she unknowingly carries: the Shikon Jewel, a small sphere holding extraordinary power.',
+  'Bleach': 'Ichigo Kurosaki is an ordinary high schooler—until his family is attacked by a Hollow, a corrupt spirit that seeks to devour human souls. It is then that he meets a Soul Reaper named Rukia Kuchiki, who gets injured while protecting Ichigo\'s family from the assailant.'
+};
+
+const fallbackImages = {
+  'Bleach': 'https://cdn.myanimelist.net/images/anime/3/40451.jpg',
+  'InuYasha': 'https://cdn.myanimelist.net/images/anime/4/19644.jpg',
+  'One Piece': 'https://cdn.myanimelist.net/images/anime/6/73245.jpg'
+};
+
+const TopAnimeStats = ({ selectedState = 'Michigan' }) => {
   const [totalUnique, setTotalUnique] = useState(0);
   const [topAnimes, setTopAnimes] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
-  const [dataRows, setDataRows] = useState([]);
-  const posterCache = useRef({});
 
   useEffect(() => {
-        Papa.parse(
-          `${process.env.PUBLIC_URL}/stats_data.csv`,
-          {
-            download: true,
-            header: true,
-            complete: ({ data }) => setDataRows(data),
-            error: err => console.error('CSV parse error:', err),
-          }
-        );
-      }, []);
-    
-      // recompute stats when dataRows or selectedState changes
-      useEffect(() => {
-        if (!dataRows.length) return;
-    
+    Papa.parse(process.env.PUBLIC_URL + '/cleaned_usa_data.csv', {
+      download: true,
+      header: true,
+      complete: async (results) => {
+        const allData = results.data.filter(row => row.state === selectedState);
+        const uniqueTitles = new Set(allData.map(row => row.title));
+        setTotalUnique(uniqueTitles.size);
+
         const animeCounts = {};
-        const userCounts = {};
-        dataRows.forEach(r => {
-          if (r.state !== selectedState) return;
-          const title = r.title || 'Unknown';
-          animeCounts[title] = (animeCounts[title] || 0)+1;
-          const user = r.username || 'Unknown';
-          const total = parseInt(r['Total Entries'], 10) || 0;
-          userCounts[user] = Math.max(userCounts[user] || 0, total);
+        allData.forEach(row => {
+          const title = row.title || 'Unknown';
+          animeCounts[title] = (animeCounts[title] || 0) + 1;
         });
-    
-        setTotalUnique(Object.keys(animeCounts).length);
-    
-        // fetch top 3 anime posters in parallel with cache
-        Promise.all(
-          Object.entries(animeCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3)
-            .map(async ([title], idx) => {
-              if (posterCache.current[title]) {
-                return { rank: idx + 1, title, imageUrl: posterCache.current[title] };
-              }
-              try {
-                const res = await fetch(
-                  `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(title)}&limit=1`
-                );
-                const json = await res.json();
-                const img = json?.data?.[0]?.images?.jpg?.image_url
-                  || 'https://via.placeholder.com/60';
-                posterCache.current[title] = img;
-                return { rank: idx+1, title, imageUrl: img };
-              } catch {
-                const placeholder = 'https://via.placeholder.com/60';
-                posterCache.current[title] = placeholder;
-                return { rank: idx + 1, title, imageUrl: placeholder };
-              }
-            })
-        ).then(setTopAnimes);
-    
-        // compute top 3 users
-        const topUsersList = Object.entries(userCounts)
+
+        const sortedAnimes = Object.entries(animeCounts)
           .sort((a, b) => b[1] - a[1])
-          .slice(0, 3)
-          .map(([username], idx) => ({
-            rank: idx + 1,
-            username,
-            avatarUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${encodeURIComponent(username)}`,
-          }));
-        setTopUsers(topUsersList);
-    
-      }, [dataRows, selectedState]);
+          .slice(0, 3);
+
+        const animeWithDetails = await Promise.all(
+          sortedAnimes.map(async ([title], index) => {
+            try {
+              const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(title)}&limit=1`);
+              const data = await res.json();
+              const entry = data?.data?.[0];
+
+              const imageUrl = entry?.images?.jpg?.image_url || fallbackImages[title];
+              const synopsis = entry?.synopsis
+                ? entry.synopsis.split('. ').slice(0, 2).join('. ') + '.'
+                : fallbackDescriptions[title];
+
+              return {
+                rank: index + 1,
+                title,
+                imageUrl,
+                synopsis
+              };
+            } catch {
+              return {
+                rank: index + 1,
+                title,
+                imageUrl: fallbackImages[title],
+                synopsis: fallbackDescriptions[title]
+              };
+            }
+          })
+        );
+
+        setTopAnimes(animeWithDetails);
+
+        const userCounts = {};
+        allData.forEach(row => {
+          const username = row.username || 'Anonymous';
+          const total = parseInt(row['Total Entries']) || 0;
+          userCounts[username] = Math.max(userCounts[username] || 0, total);
+        });
+
+        const sortedUsersRaw = Object.entries(userCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3);
+
+        const sortedUsers = [0, 1, 2].map(index => {
+          const entry = sortedUsersRaw[index];
+          if (entry) {
+            const [username] = entry;
+            return {
+              rank: index + 1,
+              username,
+              avatarUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${encodeURIComponent(username)}`
+            };
+          } else {
+            return {
+              rank: index + 1,
+              username: `Anonymous_${index + 1}`,
+              avatarUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=placeholder${index}`
+            };
+          }
+        });
+
+        setTopUsers(sortedUsers);
+      }
+    });
+  }, [selectedState]);
 
   return (
-    <div className="anime-bar-chart-container">
-      <div className="anime-bar-chart-grid">
-
-        {/* Total Unique Anime */}
-        <div className="anime-unique">
-          <div className="unique-circle">
-            <div>#TOTAL<br />UNIQUE<br />ANIME</div>
-            <div className="unique-number">{totalUnique}</div>
+    <div className="anime-container">
+      <div className="panel anime-left">
+        <h3>Most Popular Animes</h3>
+        {topAnimes.map((anime, idx) => (
+          <div key={anime.title} className="anime-entry">
+            <span className="emoji-medal">{trophyEmojis[idx]}</span>
+            <img src={anime.imageUrl} alt={anime.title} className="anime-img" />
+            <div className="anime-info">
+              <div className="anime-title-text">{anime.title}</div>
+              <div className="anime-description">{anime.synopsis}</div>
+            </div>
           </div>
+        ))}
+      </div>
+
+      <div className="panel anime-right">
+        <div className="unique-circle">
+          <div>{totalUnique}</div>
+          <div className="circle-label">Unique Anime</div>
         </div>
 
-        {/* Most Popular Animes */}
-        <div className="anime-most-popular">
-          <h3>MOST POPULAR ANIMES</h3>
-          {topAnimes.map(anime => (
-            <div key={anime.title} className="anime-rank-row">
-              <span className="rank-badge">🏆 #{anime.rank}</span>
-              <img
-                className="anime-poster"
-                src={anime.imageUrl}
-                alt={anime.title}
-                loading="lazy"
-                title={anime.title}
-              />
-              <span className="anime-title">{anime.title}</span>
+        <h3 className="raters-header">Best Raters</h3>
+        <div className="raters-list">
+          {topUsers.map((user, idx) => (
+            <div key={user.rank} className="rater-entry">
+              <span className="emoji-medal">{trophyEmojis[idx]}</span>
+              <img src={user.avatarUrl} className="rater-avatar" alt={user.username} />
+              <div className="rater-name">{user.username}</div>
             </div>
           ))}
         </div>
-
-        {/* Best Raters */}
-        <div className="anime-best-raters">
-          <h3>BEST RATERS</h3>
-          {topUsers.map(user => (
-            <div key={user.rank} className={`anime-rank-row rater-card`}>
-              <div className={`avatar-wrapper rank-${user.rank}`}>
-                <img
-                  className="anime-avatar"
-                  src={user.avatarUrl}
-                  alt={user.username}
-                  loading="lazy"
-                  title={user.username}
-                />
-              </div>
-              <div className="rater-info">
-                <span className="rank-badge">🏆 #{user.rank}</span>
-                <span className={`anime-title ${user.username === 'Anonymous' ? 'anonymous' : ''}`}>
-                  {user.username}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-
       </div>
     </div>
   );
