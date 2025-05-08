@@ -17,7 +17,7 @@ const Map = ({ selectedState, setSelectedState, setAllStates }) => {
       .attr('viewBox', `0 0 ${containerWidth} ${height}`)
       .style('width', '100%')
       .style('height', `${height}px`)
-      .style('background', '#fafafa');
+      .style('background', '#1a1a1a');
 
     // clear any existing drawing
     svg.selectAll('*').remove();
@@ -120,6 +120,7 @@ const Map = ({ selectedState, setSelectedState, setAllStates }) => {
           .attr('x', lx)
           .attr('y', ly - 2)
           .attr('font-size', '15px')
+          .attr('fill', '#ffa500')  // 👈 orange fill
           .text('0');
 
         svg.append('text')
@@ -127,6 +128,7 @@ const Map = ({ selectedState, setSelectedState, setAllStates }) => {
           .attr('y', ly - 2)
           .attr('text-anchor', 'end')
           .attr('font-size', '15px')
+          .attr('fill', '#ffa500')  // 👈 orange fill
           .text(fmt(maxCount));
       }
     });
