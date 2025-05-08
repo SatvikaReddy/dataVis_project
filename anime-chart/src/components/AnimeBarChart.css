@@ -43,38 +43,6 @@
   text-align: center;
 }
 
-.source-descriptions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.source-def {
-  flex: 1 1 200px;
-  border: 1px solid #ddd;
-  padding: 0.5rem;
-  border-radius: 4px;
-}
-
-.source-example-img {
-  width: 100%;
-  height: auto;
-  margin-top: 0.5rem;
-}
-
-.source-def-selected {
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fafafa;
-}
-.source-def-selected p {
-  font-style: italic;
-  font-size: 0.9rem; 
-  line-height: 1.3;  
-}
 select {
   margin: 0.5rem;
   padding: 0.4rem;
