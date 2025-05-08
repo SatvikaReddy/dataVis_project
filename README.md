@@ -17,18 +17,13 @@ git clone https://github.com/your-username/dataVis_project.git
 # Step 2: Navigate to the anime-chart folder
 cd dataVis_project/anime-chart
 
-# Step 3: Unzip the data into public folder
-unzip viz_data.zip -d ./public/
-mv public/viz_data/* public/
-rm -r public/viz_data/
-
-# Step 4: Install required dependencies
+# Step 3: Install required dependencies
 npm install react-chartjs-2 chart.js papaparse
 
-# Step 5: Start the development server
+# Step 4: Start the development server
 npm start
 
-# Step 6: Open your browser
+# Step 5: Open your browser
 http://localhost:3000
 ```
 
