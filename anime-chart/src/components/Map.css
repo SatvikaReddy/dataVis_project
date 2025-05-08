@@ -10,20 +10,25 @@
   
 #states > .state.selected {
     stroke-width: 2px;
-    stroke: black;
+    stroke: rgb(249, 246, 246);
     stroke-opacity: 1;
 }
 
 .tooltip {
-    position: absolute;        /* you already have this inline */
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-    background: rgba(0,0,0,0.75);
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 3px;
-    font-size: 12px;
-    white-space: nowrap;
-    z-index: 10;
-  }
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  background: rgba(255, 140, 0, 0.85);  /* Orange-ish tooltip */
+  color: #fffbe6;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
+}
+#states > .state {
+  stroke: #ffa500;
+  stroke-opacity: 0.6;
+}
