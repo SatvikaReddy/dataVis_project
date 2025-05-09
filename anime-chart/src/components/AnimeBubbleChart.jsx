@@ -71,20 +71,24 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
         return;
       }
 
+    const maxCount = Math.max(...entries.map(([, count]) => count));
+
+
     const genreList = [...new Set(Object.keys(bubbleMap).map(k => k.split('-')[0]))];
 
     const brightColors = [
-      'rgba(0, 153, 255, 0.9)',     // Blue
-      'rgba(255, 140, 0, 0.9)',     // Orange
-      'rgba(0, 255, 127, 0.9)',     // Green
-      'rgba(255, 69, 69, 0.9)',     // Red
-      'rgba(186, 85, 211, 0.9)',    // Purple
-      'rgba(255, 215, 0, 0.9)',     // Gold
-      'rgba(255, 105, 180, 0.9)',   // Pink
-      'rgba(127, 255, 212, 0.9)',   // Aqua
-      'rgba(255, 255, 100, 0.9)',   // Pale Yellow
-      'rgba(255, 255, 255, 0.9)'    // White
+      'rgba(0, 191, 255, 0.9)',     // Deep Sky Blue
+      'rgba(255, 99, 71, 0.9)',     // Tomato Red
+      'rgba(0, 255, 127, 0.9)',     // Spring Green
+      'rgba(218, 112, 214, 0.9)',   // Orchid Purple
+      'rgba(255, 215, 0, 0.9)',     // Gold (kept for highlight)
+      'rgba(255, 20, 147, 0.9)',    // Deep Pink
+      'rgba(64, 224, 208, 0.9)',    // Turquoise
+      'rgba(123, 104, 238, 0.9)',   // Medium Slate Blue
+      'rgba(255, 165, 0, 0.9)',     // Orange (brighter)
+      'rgba(173, 255, 47, 0.9)'     // Green Yellow
     ];
+    
 
     
     // Assign remaining colors to unseen genres
@@ -99,7 +103,7 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
         .filter(([k]) => k.startsWith(`${genre}-`))
         .map(([k, count]) => {
           const age = k.split('-')[1];
-          return { x: genreList.indexOf(genre), y: age, r: Math.min(count/50 + 5, 30), count };
+          return { x: genreList.indexOf(genre), y: age, r: Math.min((count / maxCount) * 30 + 5, 40)};
         }),
       backgroundColor: genreColorMap[genre],
     }));
@@ -129,8 +133,7 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
                       font: { size: 14 }
                     },
                     ticks: {
-                      color: '#ffffff',
-                      font: { size: 12 }
+                      display: false
                     },
                     grid: {
                       color: '#ffa500'
@@ -167,10 +170,16 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
                     callbacks: {
                       label: function (context) {
                         const genre = context.dataset.label || '';
-                        const age = context.raw.y;
-                        const count = context.raw.count.toLocaleString();
-                        return `${genre} | Age Group: ${age} | # of Viewers: ${count}`;
+                        const age = context.raw?.y ?? 'Unknown';
+                        const count = context.raw?.count;
+                      
+                        if (count !== undefined) {
+                          return `${genre} | Age Group: ${age} | # of Viewers: ${count.toLocaleString()}`;
+                        } else {
+                          return `${genre} | Age Group: ${age}`;
+                        }
                       }
+                      
                     }
                   }
                 }

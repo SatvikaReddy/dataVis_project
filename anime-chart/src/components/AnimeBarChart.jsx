@@ -151,12 +151,16 @@ const AnimeBarChart = ({ selectedState, setAllStates }) => {
       </div>
       ) : (
         <p className="source-def-selected">
-          Curious about the Anime sources? Select the bars to find out more!
+
         </p>
       )}
       {chartData
       ? <Bar data={styledData} options={chartOptions} />
       : <p>Loading...</p>}
+
+<p className="source-def-selected">
+    Curious about the Anime sources? Select the bars to find out more!
+  </p>
     </div>
   );
 };
