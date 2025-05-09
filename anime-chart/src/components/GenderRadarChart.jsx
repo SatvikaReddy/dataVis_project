@@ -20,40 +20,32 @@ const GenderRadarChart = ({ selectedState, setAllStates }) => {
 // Use selectedState directly
   const [chartData, setChartData] = useState(null);
 
+  // ─── chunked load & aggregate gender fields from radar_data.csv ────────────
   useEffect(() => {
-    Papa.parse(process.env.PUBLIC_URL + '/cleaned_usa_data.csv', {
+    const genders = { Male: {}, Female: {} };
+    const fields = ['Completed', 'Watching', 'Dropped', 'Rewatched'];
+    fields.forEach(f => { genders.Male[f] = 0; genders.Female[f] = 0; });
+
+    Papa.parse(`${process.env.PUBLIC_URL}/radar_data.csv`, {
       download: true,
       header: true,
-      complete: (results) => {
-        const allData = results.data;
-        const countryList = [...new Set(allData.map(row => row.state).filter(Boolean))];
-        setAllStates(countryList);
-
-        const filtered = allData.filter(row => row.state === selectedState);
-        const genders = { Male: {}, Female: {} };
-        const fields = ['Completed', 'Watching', 'Dropped', 'Rewatched'];
-
-        fields.forEach(field => {
-          genders.Male[field] = 0;
-          genders.Female[field] = 0;
-        });
-
-        filtered.forEach(row => {
+      chunk: ({ data: rows }) => {
+        rows.forEach(row => {
+          if (row.state !== selectedState) return;
           const g = row.Gender;
-          if (genders[g]) {
-            fields.forEach(field => {
-              const value = parseFloat(row[field]) || 0;
-              genders[g][field] += value;
-            });
-          }
+          if (!genders[g]) return;
+          fields.forEach(f =>
+            { genders[g][f] += parseFloat(row[f]) || 0; }
+          );
         });
-
+      },
+      complete: () => {
         setChartData({
           labels: fields,
           datasets: [
             {
               label: 'Male',
-              data: fields.map(f => Math.round(genders.Male[f] / 1000)),
+              data: fields.map(f => genders.Male[f] / 1000),
               backgroundColor: 'rgba(120,120,255,0.2)',
               borderColor: 'rgba(100,100,255,1)',
               borderWidth: 1,
@@ -62,7 +54,7 @@ const GenderRadarChart = ({ selectedState, setAllStates }) => {
             },
             {
               label: 'Female',
-              data: fields.map(f => Math.round(genders.Female[f] / 1000)),
+              data: fields.map(f => genders.Female[f] / 1000),
               backgroundColor: 'rgba(0,200,100,0.2)',
               borderColor: 'rgba(0,200,0,1)',
               borderWidth: 1,
@@ -71,9 +63,10 @@ const GenderRadarChart = ({ selectedState, setAllStates }) => {
             }
           ]
         });
-      }
+      },
+      error: err => console.error('CSV parse error:', err)
     });
-  }, [selectedState, setAllStates]);
+  }, [selectedState]);
 
   return (
     <div className="chart-container radar-chart">

@@ -64,18 +64,34 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
       });
     });
 
-        const genreList = [...new Set(Object.keys(bubbleMap).map(k => k.split('-')[0]))];
+    const entries = Object.entries(bubbleMap);
+      if (!entries.length) {
+        setNoData(true);
+        setData(null);
+        return;
+      }
 
-        
-        // Assign remaining colors to unseen genres
-        let colorIndex = Object.keys(genreColorMap).length;
-        
-        genreList.forEach((genre) => {
-          if (!genreColorMap[genre]) {
-            genreColorMap[genre] = tableauColors[colorIndex % tableauColors.length];
-            colorIndex++;
-          }
-        });
+    const genreList = [...new Set(Object.keys(bubbleMap).map(k => k.split('-')[0]))];
+
+    const brightColors = [
+      'rgba(0, 153, 255, 0.9)',     // Blue
+      'rgba(255, 140, 0, 0.9)',     // Orange
+      'rgba(0, 255, 127, 0.9)',     // Green
+      'rgba(255, 69, 69, 0.9)',     // Red
+      'rgba(186, 85, 211, 0.9)',    // Purple
+      'rgba(255, 215, 0, 0.9)',     // Gold
+      'rgba(255, 105, 180, 0.9)',   // Pink
+      'rgba(127, 255, 212, 0.9)',   // Aqua
+      'rgba(255, 255, 100, 0.9)',   // Pale Yellow
+      'rgba(255, 255, 255, 0.9)'    // White
+    ];
+
+    
+    // Assign remaining colors to unseen genres
+    const genreColorMap = {};
+    genreList.forEach((genre, idx) => {
+      genreColorMap[genre] = brightColors[idx % brightColors.length];
+    });
 
     const datasets = genreList.slice(0,6).map(genre => ({
       label: genre,

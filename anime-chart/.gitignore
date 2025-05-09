@@ -23,3 +23,8 @@ yarn-debug.log*
 yarn-error.log*
 
 package-lock.json
+
+public/stats_data.csv
+public/bar_chart_data.json
+public/bubble_chart_data.json
+public/radar_data.json
