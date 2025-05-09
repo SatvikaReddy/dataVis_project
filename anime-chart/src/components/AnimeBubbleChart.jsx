@@ -3,6 +3,7 @@ import { Bubble } from 'react-chartjs-2';
 import Papa from 'papaparse';
 import {
   Chart as ChartJS,
+  CategoryScale,
   PointElement,
   Tooltip,
   Legend,
@@ -15,6 +16,7 @@ ChartJS.register(PointElement, Tooltip, Legend, Title, LinearScale);
 
 const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
   const [data, setData] = useState(null);
+  const [rawBubbleData, setRawBubbleData] = useState([]);
   const [noData, setNoData] = useState(false);
 
   const ageGroups = ['35+', '32–35', '29–31', '26–28', '<26'];
@@ -30,75 +32,64 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
   };
 
   useEffect(() => {
-    Papa.parse(process.env.PUBLIC_URL + '/cleaned_usa_data.csv', {
+    const stateSet = new Set();
+    Papa.parse(`${process.env.PUBLIC_URL}/cleaned_usa_data.csv`, {
       download: true,
       header: true,
-      complete: (results) => {
-        const allData = results.data;
-        const uniqueCountries = [...new Set(allData.map(row => row.state).filter(Boolean))];
-        setAllStates(uniqueCountries);
+      chunk: ({ data: rows }) => rows.forEach(r => r.state && stateSet.add(r.state)),
+      complete: () => setAllStates(Array.from(stateSet).sort()),
+      error: err => console.error('CSV state-load error:', err),
+    });
+  }, [setAllStates]);
 
-        const filtered = allData.filter(row => row.state === selectedState);
-        const bubbleMap = {};
+  useEffect(() => {
+    Papa.parse(`${process.env.PUBLIC_URL}/bubble_chart_data.csv`, {
+      download: true,
+      header: true,
+      complete: ({ data }) => setRawBubbleData(data),
+      error: err => console.error('CSV bubble-data error:', err),
+    });
+  }, []);
 
-        filtered.forEach(row => {
-          const ageGroup = getAgeGroup(row.Age);
-          if (!ageGroup || !row.genre) return;
+  useEffect(() => {
+    if (!rawBubbleData.length) return;
 
-          const genres = row.genre.split(',').map(g => g.trim());
-          genres.forEach(genre => {
-            const key = genre + '-' + ageGroup;
-            bubbleMap[key] = (bubbleMap[key] || 0) + 1;
-          });
-        });
+    const bubbleMap = {};
+    rawBubbleData.forEach(r => {
+      if (r.state !== selectedState) return;
+      const ageGroup = getAgeGroup(r.Age);
+      if (!ageGroup || !r.genre) return;
+      r.genre.split(',').map(g => g.trim()).forEach(genre => {
+        bubbleMap[`${genre}-${ageGroup}`] = (bubbleMap[`${genre}-${ageGroup}`] || 0) + 1;
+      });
+    });
 
         const genreList = [...new Set(Object.keys(bubbleMap).map(k => k.split('-')[0]))];
 
-        const brightColors = [
-          'rgba(0, 153, 255, 0.9)',     // Blue
-          'rgba(255, 140, 0, 0.9)',     // Orange
-          'rgba(0, 255, 127, 0.9)',     // Green
-          'rgba(255, 69, 69, 0.9)',     // Red
-          'rgba(186, 85, 211, 0.9)',    // Purple
-          'rgba(255, 215, 0, 0.9)',     // Gold
-          'rgba(255, 105, 180, 0.9)',   // Pink
-          'rgba(127, 255, 212, 0.9)',   // Aqua
-          'rgba(255, 255, 100, 0.9)',   // Pale Yellow
-          'rgba(255, 255, 255, 0.9)'    // White
-        ];
-
-        const genreColorMap = {};
-        genreList.forEach((genre, idx) => {
-          genreColorMap[genre] = brightColors[idx % brightColors.length];
+        
+        // Assign remaining colors to unseen genres
+        let colorIndex = Object.keys(genreColorMap).length;
+        
+        genreList.forEach((genre) => {
+          if (!genreColorMap[genre]) {
+            genreColorMap[genre] = tableauColors[colorIndex % tableauColors.length];
+            colorIndex++;
+          }
         });
 
-        const datasets = genreList.slice(0, 6).map((genre) => {
-          const data = Object.keys(bubbleMap)
-            .filter(k => k.startsWith(genre + '-'))
-            .map(k => {
-              const [, ageGroup] = k.split('-');
-              return {
-                x: genreList.indexOf(genre),
-                y: ageGroup,
-                r: Math.min(bubbleMap[k] / 50 + 5, 30),
-                count: bubbleMap[k]
-              };
-            });
-          return {
-            label: genre,
-            data,
-            backgroundColor: genreColorMap[genre]
-          };
-        });
+    const datasets = genreList.slice(0,6).map(genre => ({
+      label: genre,
+      data: entries
+        .filter(([k]) => k.startsWith(`${genre}-`))
+        .map(([k, count]) => {
+          const age = k.split('-')[1];
+          return { x: genreList.indexOf(genre), y: age, r: Math.min(count/50 + 5, 30), count };
+        }),
+      backgroundColor: genreColorMap[genre],
+    }));
 
-        if (datasets.length === 0) {
-          setNoData(true);
-        }
-
-        setData({ datasets });
-      }
-    });
-  }, [selectedState, setAllStates]);
+    setData({ datasets });
+  }, [rawBubbleData, selectedState]);
 
   return (
     <div className="chart-container">
