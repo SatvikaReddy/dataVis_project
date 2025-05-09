@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: sans-serif;
-  background: #f8f8f8;
+  background: #161515;
 }
 
 .main-content {
@@ -15,6 +15,7 @@ body {
 .state-display {
   text-align: center;
   margin-bottom: 20px;
+  color: orange;
 }
 
 .charts-row {

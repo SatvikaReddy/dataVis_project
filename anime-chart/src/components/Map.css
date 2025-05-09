@@ -9,7 +9,7 @@
   }
   
 #states > .state.selected {
-    stroke-width: 2px;
+    stroke-width: 4px;
     stroke: rgb(249, 246, 246);
     stroke-opacity: 1;
 }

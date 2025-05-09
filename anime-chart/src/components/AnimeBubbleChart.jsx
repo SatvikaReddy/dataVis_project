@@ -3,7 +3,7 @@ import { Bubble } from 'react-chartjs-2';
 import Papa from 'papaparse';
 import {
   Chart as ChartJS,
-  CategoryScale,
+  // CategoryScale,
   PointElement,
   Tooltip,
   Legend,
@@ -101,12 +101,22 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
       label: genre,
       data: entries
         .filter(([k]) => k.startsWith(`${genre}-`))
+        // .map(([k, count]) => {
+        //   const age = k.split('-')[1];
+        //   return { x: genreList.indexOf(genre), y: age, r: Math.min((count / maxCount) * 30 + 5, 40)};
+        // }),
         .map(([k, count]) => {
           const age = k.split('-')[1];
-          return { x: genreList.indexOf(genre), y: age, r: Math.min((count / maxCount) * 30 + 5, 40)};
+          return {
+            x: genreList.indexOf(genre),
+            y: age,
+            r: Math.min((count / maxCount) * 30 + 5, 40),
+            count: count // Include count so it's available in tooltip
+          };
         }),
       backgroundColor: genreColorMap[genre],
     }));
+    
 
     setData({ datasets });
   }, [rawBubbleData, selectedState]);
