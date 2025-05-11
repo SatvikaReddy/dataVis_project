@@ -33,6 +33,23 @@ const Navbar = ({ selectedState, setSelectedState, allStates }) => {
         >
           Process Book
         </a>
+
+        <a
+          href="https://youtu.be/zkdvjr2EH7Y"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontSize: '13px' }}
+        >
+          YouTube
+        </a>
+        <a
+          href="https://github.com/SatvikaReddy/dataVis_project"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontSize: '13px' }}
+        >
+          GitHub
+        </a>
         <div className="state-selector">
           <select
             value={selectedState}

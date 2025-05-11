@@ -34,6 +34,30 @@ http://localhost:3000
 
 ---
 
+
+## 🔍 Overview of Submission
+
+This submission includes:
+
+- **Project Code**: All code inside the `anime-chart/src/` folder is original and was written as part of this submission. This includes React components, visualization logic, and styling.
+- **Libraries Used**:
+  - [`React`](https://reactjs.org/): Front-end UI framework
+  - [`Chart.js`](https://www.chartjs.org/) & [`react-chartjs-2`](https://react-chartjs-2.js.org/): For rendering charts
+  - [`PapaParse`](https://www.papaparse.com/): For parsing CSV data
+  - [`D3.js`](https://d3js.org/): Used for custom map-based heatmap rendering
+- **Project Website**: [🌐 Live Demo]()
+- **Screencast Video**: [🎥 Watch the Demo](https://youtu.be/zkdvjr2EH7Y)
+
+
+## 🧠 Non-Obvious Features
+
+- **State-Based Filtering**: Dropdown for U.S. states dynamically updates all visualizations.
+- **Interactive Heatmap**: Users can select a state by clicking on the map, this also changes the dropdown.
+- **Anchored Navbar**: Navigation links smoothly scroll to individual charts.
+- **Dropdown Grouping**: Chart types are grouped in a dropdown for cleaner UI.
+- **BarChart Info**: If you click on the bars of the barchart you will get more information.
+
+
 ## 📁 Project Structure
 
 ```
