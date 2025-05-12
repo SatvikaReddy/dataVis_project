@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/anime-chart/static/css/main.6b2cab50.css",
-    "main.js": "/anime-chart/static/js/main.08497c9f.js",
+    "main.js": "/anime-chart/static/js/main.247880cb.js",
     "static/js/453.6d34fb87.chunk.js": "/anime-chart/static/js/453.6d34fb87.chunk.js",
     "index.html": "/anime-chart/index.html",
     "main.6b2cab50.css.map": "/anime-chart/static/css/main.6b2cab50.css.map",
-    "main.08497c9f.js.map": "/anime-chart/static/js/main.08497c9f.js.map",
+    "main.247880cb.js.map": "/anime-chart/static/js/main.247880cb.js.map",
     "453.6d34fb87.chunk.js.map": "/anime-chart/static/js/453.6d34fb87.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6b2cab50.css",
-    "static/js/main.08497c9f.js"
+    "static/js/main.247880cb.js"
   ]
 }
