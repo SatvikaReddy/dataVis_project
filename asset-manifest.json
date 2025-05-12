@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/dataVis_project/anime-chart/static/css/main.b67d2790.css",
+    "main.js": "/dataVis_project/anime-chart/static/js/main.7aa13ef6.js",
+    "static/js/453.6d34fb87.chunk.js": "/dataVis_project/anime-chart/static/js/453.6d34fb87.chunk.js",
+    "index.html": "/dataVis_project/anime-chart/index.html",
+    "main.b67d2790.css.map": "/dataVis_project/anime-chart/static/css/main.b67d2790.css.map",
+    "main.7aa13ef6.js.map": "/dataVis_project/anime-chart/static/js/main.7aa13ef6.js.map",
+    "453.6d34fb87.chunk.js.map": "/dataVis_project/anime-chart/static/js/453.6d34fb87.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b67d2790.css",
+    "static/js/main.7aa13ef6.js"
+  ]
+}
