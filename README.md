@@ -12,7 +12,7 @@ To run the app locally, follow the steps below:
 
 ```bash
 # Step 1: Clone the project
-git clone https://github.com/your-username/dataVis_project.git
+git clone https://github.com/SatvikaReddy/dataVis_project.git
 
 # Step 2: Navigate to the anime-chart folder
 cd dataVis_project/anime-chart
