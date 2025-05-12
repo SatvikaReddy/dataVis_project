@@ -61,6 +61,7 @@
   font-weight: 600;       /* ✅ Bolder for clarity */
   text-align: center;
   box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
+  opacity: 1;
 }
 
 

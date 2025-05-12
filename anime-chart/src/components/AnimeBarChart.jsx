@@ -74,7 +74,7 @@ const AnimeBarChart = ({ selectedState, setAllStates }) => {
     const states = new Set();
     const counts = {};
 
-    Papa.parse(`${process.env.PUBLIC_URL}/cleaned_usa_data.csv`, {
+    Papa.parse(`${process.env.PUBLIC_URL}/bar_chart_data.csv`, {
       download: true,
       header: true,
       chunk: ({ data: rows }) => {

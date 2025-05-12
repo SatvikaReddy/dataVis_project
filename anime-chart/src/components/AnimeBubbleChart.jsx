@@ -31,16 +31,16 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
     return '35+';
   };
 
-  useEffect(() => {
-    const stateSet = new Set();
-    Papa.parse(`${process.env.PUBLIC_URL}/cleaned_usa_data.csv`, {
-      download: true,
-      header: true,
-      chunk: ({ data: rows }) => rows.forEach(r => r.state && stateSet.add(r.state)),
-      complete: () => setAllStates(Array.from(stateSet).sort()),
-      error: err => console.error('CSV state-load error:', err),
-    });
-  }, [setAllStates]);
+  // useEffect(() => {
+  //   const stateSet = new Set();
+  //   Papa.parse(`${process.env.PUBLIC_URL}/cleaned_usa_data.csv`, {
+  //     download: true,
+  //     header: true,
+  //     chunk: ({ data: rows }) => rows.forEach(r => r.state && stateSet.add(r.state)),
+  //     complete: () => setAllStates(Array.from(stateSet).sort()),
+  //     error: err => console.error('CSV state-load error:', err),
+  //   });
+  // }, [setAllStates]);
 
   useEffect(() => {
     Papa.parse(`${process.env.PUBLIC_URL}/bubble_chart_data.csv`, {
@@ -132,6 +132,7 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
             <Bubble
               data={data}
               options={{
+                // layout: { padding: { right: 120 } },
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
@@ -152,6 +153,8 @@ const AnimeBubbleChart = ({ selectedState, setAllStates }) => {
                   y: {
                     type: 'category',
                     labels: ageGroups,
+                    // offset: true,
+                    
                     title: {
                       display: true,
                       text: 'Age Group',
