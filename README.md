@@ -40,12 +40,13 @@ http://localhost:3000
 This submission includes:
 
 - **Project Code**: All code inside the `anime-chart/src/` folder is original and was written as part of this submission. This includes React components, visualization logic, and styling.
+- **Data** - Data was too large to be unzipped via Github pages so we are accessing it via a google drive link - [Data](https://drive.google.com/drive/u/1/folders/1VZAVJwp_Wc0cnx0ltY9swUTs-X3OtCsu)
 - **Libraries Used**:
   - [`React`](https://reactjs.org/): Front-end UI framework
   - [`Chart.js`](https://www.chartjs.org/) & [`react-chartjs-2`](https://react-chartjs-2.js.org/): For rendering charts
   - [`PapaParse`](https://www.papaparse.com/): For parsing CSV data
   - [`D3.js`](https://d3js.org/): Used for custom map-based heatmap rendering
-- **Project Website**: [🌐 Live Demo]()
+- **Project Website**: [🌐 Live Demo]( https://SatvikaReddy.github.io/dataVis_project/)
 - **Screencast Video**: [🎥 Watch the Demo](https://youtu.be/zkdvjr2EH7Y)
 
 
