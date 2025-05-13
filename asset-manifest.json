@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/dataVis_project/static/css/main.6b2cab50.css",
-    "main.js": "/dataVis_project/static/js/main.f4fe10c1.js",
+    "main.js": "/dataVis_project/static/js/main.775c5d67.js",
     "static/js/453.6d34fb87.chunk.js": "/dataVis_project/static/js/453.6d34fb87.chunk.js",
     "index.html": "/dataVis_project/index.html",
     "main.6b2cab50.css.map": "/dataVis_project/static/css/main.6b2cab50.css.map",
-    "main.f4fe10c1.js.map": "/dataVis_project/static/js/main.f4fe10c1.js.map",
+    "main.775c5d67.js.map": "/dataVis_project/static/js/main.775c5d67.js.map",
     "453.6d34fb87.chunk.js.map": "/dataVis_project/static/js/453.6d34fb87.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6b2cab50.css",
-    "static/js/main.f4fe10c1.js"
+    "static/js/main.775c5d67.js"
   ]
 }
