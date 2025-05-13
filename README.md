@@ -46,7 +46,7 @@ This submission includes:
   - [`Chart.js`](https://www.chartjs.org/) & [`react-chartjs-2`](https://react-chartjs-2.js.org/): For rendering charts
   - [`PapaParse`](https://www.papaparse.com/): For parsing CSV data
   - [`D3.js`](https://d3js.org/): Used for custom map-based heatmap rendering
-- **Project Website**: [🌐 Live Demo]( https://SatvikaReddy.github.io/dataVis_project/)
+- **Project Website**: [🌐 Live Demo](https://SatvikaReddy.github.io/dataVis_project/)
 - **Screencast Video**: [🎥 Watch the Demo](https://youtu.be/zkdvjr2EH7Y)
 
 
