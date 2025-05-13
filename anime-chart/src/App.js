@@ -26,7 +26,7 @@ const Navbar = ({ selectedState, setSelectedState, allStates }) => {
           </div>
         </div>
         <a
-          href="/Exploring.pdf"
+          href="https://drive.google.com/file/d/10hIRDXr4do8Vmqna95JpU4l3YpcaKDnZ/view?usp=drive_link"
           target="_blank"
           rel="noopener noreferrer"
           style={{ fontSize: '13px' }}
